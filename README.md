@@ -1,3 +1,46 @@
+# Flappy Bird Learing Project
+
+**author**: RealVybornak
+
+**email**: <mira.vyborny110@gmail.com>
+
+***
+
+## Description
+
+Here goes the project description.
+
+1. what purpose it serves
+2. how it works
+3. what are the main features
+
+## How to install
+
+_to be implemented later_
+
+## How to Play
+
+some text here
+
+## Planned features
+
+1. Menu
+
+    Menu in the beginning of the game. More desc ...
+
+2. Speed control
+
+3. ...
+4. ...
+5. ...
+6. ...
+7. ...
+8. ...
+9. ...
+10. MVC design
+
+## Rewrite this into the categories
+
 game parts
   – menu
       – window with just play and some title (maybe setting window with customizable sound and music)
@@ -11,7 +54,7 @@ game parts
         – the bird wont be moving except up and down
       – pipes
         – !should be moving smoothly, but most importantly make sure it is possible to do
-	– pipes will move the bird will just stay in one place moving up and down, and also pipes will begin moving faster
+ – pipes will move the bird will just stay in one place moving up and down, and also pipes will begin moving faster
       – collision detection
         – should be clean and accurate
         – !make it doesn't count collison falsely
@@ -21,6 +64,6 @@ game parts
   – restart mechanism
       – game over screen
         – game over screen appears after a collision
-        – screen will have the retry button, menu botton and final score 
+        – screen will have the retry button, menu botton and final score
       – restart mechanism
-	– it will basicly be same as play but will reset everything after pressing the retry
+ – it will basicly be same as play but will reset everything after pressing the retry
