@@ -1,9 +1,11 @@
-""" Flappy Bird clone in Python using Pygame package"""
-import pygame
+"""Flappy Bird game implemented in Python using Pygame package"""
+
 import random
+
+import pygame
 from pygame.locals import (
-    K_SPACE,
     K_ESCAPE,
+    K_SPACE,
     KEYDOWN,
     QUIT,
 )
@@ -20,17 +22,13 @@ screen_height = 1080
 
 clock = pygame.time.Clock()
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.Surface((60,50))
-        self.surf.fill((255,255,0))
-        self.rect = self.surf.get_rect(
-            center = (
-                screen_width/2,
-                screen_height/2
-            )
-        )
+        self.surf = pygame.Surface((60, 50))
+        self.surf.fill((255, 255, 0))
+        self.rect = self.surf.get_rect(center=(screen_width / 2, screen_height / 2))
 
     def movement(self, pressd_keys):
         global y
@@ -40,37 +38,33 @@ class Player(pygame.sprite.Sprite):
             if pressd_keys == KEYDOWN:
                 if pressd_keys == [K_ESCAPE]:
                     self.rect.move_ip(0, 20)
-            
-        else:
-                try:
-                    if y == False:
-                        y = 1
-                except:
-                    y = 1
-                y += 2
-                if y < 100:
-                    self.rect.move_ip(0, y/4)
-                else:
-                    y = 100
-                    self.rect.move_ip(0, y/4)
 
-        if self.rect.top < 0:
-            self.rect.top = 0
-        if self.rect.bottom > screen_height:
-            self.rect.bottom = screen_height
+        else:
+            try:
+                if y == False:
+                    y = 1
+            except:
+                y = 1
+            y += 2
+            if y < 100:
+                self.rect.move_ip(0, y / 4)
+            else:
+                y = 100
+                self.rect.move_ip(0, y / 4)
+
+        self.rect.top = max(self.rect.top, 0)
+        self.rect.bottom = min(self.rect.bottom, screen_height)
+
 
 class Obsticles_Lower(pygame.sprite.Sprite):
     def __init__(self):
-        global size_lower    
+        global size_lower
         super(Obsticles_Lower, self).__init__()
-        size_lower = random.randint(100,780)
+        size_lower = random.randint(100, 780)
         self.surf = pygame.Surface((75, size_lower))
         self.surf.fill((0, 155, 0))
         self.rect = self.surf.get_rect(
-            center=(
-                screen_width+100,
-                screen_height - size_lower/2
-            )
+            center=(screen_width + 100, screen_height - size_lower / 2)
         )
 
     def update(self):
@@ -78,16 +72,14 @@ class Obsticles_Lower(pygame.sprite.Sprite):
         if self.rect.right < 0:
             self.kill()
 
+
 class Obsticles_Upper(pygame.sprite.Sprite):
-    def __init__(self):    
+    def __init__(self):
         super(Obsticles_Upper, self).__init__()
         self.surf = pygame.Surface((75, (screen_height - size_lower - 250)))
         self.surf.fill((0, 155, 0))
         self.rect = self.surf.get_rect(
-            center=(
-                screen_width+100,
-                0 + (screen_height - size_lower - 250)/2
-            )
+            center=(screen_width + 100, 0 + (screen_height - size_lower - 250) / 2)
         )
 
     def update(self):
@@ -95,22 +87,19 @@ class Obsticles_Upper(pygame.sprite.Sprite):
         if self.rect.right < 0:
             self.kill()
 
+
 class Points(pygame.sprite.Sprite):
-    def __init__(self):    
+    def __init__(self):
         super(Points, self).__init__()
         self.surf = pygame.Surface((50, 1080))
         self.surf.fill((135, 206, 250))
-        self.rect = self.surf.get_rect(
-            center=(
-                screen_width+100,
-                540 
-            )
-        )
+        self.rect = self.surf.get_rect(center=(screen_width + 100, 540))
 
     def update(self):
         self.rect.move_ip(-5, 0)
         if self.rect.right < 0:
             self.kill()
+
 
 class Clouds(pygame.sprite.Sprite):
     def __init__(self):
@@ -118,10 +107,7 @@ class Clouds(pygame.sprite.Sprite):
         self.surf = pygame.image.load("cloud.png")
         self.surf.set_colorkey((0, 0, 0))
         self.rect = self.surf.get_rect(
-            center=(
-                screen_width+100,
-                random.randint(50, 1030)
-            )
+            center=(screen_width + 100, random.randint(50, 1030))
         )
 
     def update(self):
@@ -129,9 +115,10 @@ class Clouds(pygame.sprite.Sprite):
         if self.rect.right < 0:
             self.kill()
 
+
 pygame.init()
 
-screen = pygame.display.set_mode((screen_width,screen_height))
+screen = pygame.display.set_mode((screen_width, screen_height))
 
 player = Player()
 
@@ -154,7 +141,7 @@ POINTWALL = pygame.USEREVENT + 3
 pygame.time.set_timer(POINTWALL, 3500)
 
 CLOUD = pygame.USEREVENT + 4
-pygame.time.set_timer(CLOUD, random.randint(750,2000))
+pygame.time.set_timer(CLOUD, random.randint(750, 2000))
 
 while running:
     for event in pygame.event.get():
@@ -205,7 +192,7 @@ while running:
     if pygame.sprite.spritecollide(player, upper, lower):
         player.kill()
         running = False
- 
+
     if pygame.sprite.spritecollide(player, pointwall, pointwall):
         score += 1
         print(score)
@@ -222,7 +209,7 @@ try:
     if HighestScore > 99999999999:
         print("damn")
     else:
-        print("="*50)
+        print("=" * 50)
 except:
     HighestScore = 0
 
