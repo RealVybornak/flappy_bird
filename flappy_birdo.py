@@ -1,3 +1,4 @@
+""" Flappy Bird clone in Python using Pygame."""
 import pygame
 import random
 from pygame.locals import (
