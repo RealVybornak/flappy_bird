@@ -1,7 +1,6 @@
 """Flappy Bird game implemented in Python using Pygame package"""
 
 import random
-
 import pygame
 from pygame.locals import (
     K_ESCAPE,
@@ -26,8 +25,8 @@ clock = pygame.time.Clock()
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.Surface((60, 50))
-        self.surf.fill((255, 255, 0))
+        self.surf = pygame.image.load("flappy.png").convert()
+        self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(center=(screen_width / 2, screen_height / 2))
 
     def movement(self, pressd_keys):
@@ -61,8 +60,8 @@ class Obsticles_Lower(pygame.sprite.Sprite):
         global size_lower
         super(Obsticles_Lower, self).__init__()
         size_lower = random.randint(100, 780)
-        self.surf = pygame.Surface((75, size_lower))
-        self.surf.fill((0, 155, 0))
+        self.surf = pygame.image.load("pipe_lower.png").convert()
+        self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(
             center=(screen_width + 100, screen_height - size_lower / 2)
         )
@@ -76,10 +75,10 @@ class Obsticles_Lower(pygame.sprite.Sprite):
 class Obsticles_Upper(pygame.sprite.Sprite):
     def __init__(self):
         super(Obsticles_Upper, self).__init__()
-        self.surf = pygame.Surface((75, (screen_height - size_lower - 250)))
-        self.surf.fill((0, 155, 0))
+        self.surf = pygame.image.load("pipe_upper.png").convert()
+        self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(
-            center=(screen_width + 100, 0 + (screen_height - size_lower - 250) / 2)
+            center=(screen_width + 100, 0 + (screen_height - size_lower - 850) / 2)
         )
 
     def update(self):
@@ -104,7 +103,7 @@ class Points(pygame.sprite.Sprite):
 class Clouds(pygame.sprite.Sprite):
     def __init__(self):
         super(Clouds, self).__init__()
-        self.surf = pygame.image.load("cloud.png")
+        self.surf = pygame.image.load("cloud_2.png").convert()
         self.surf.set_colorkey((0, 0, 0))
         self.rect = self.surf.get_rect(
             center=(screen_width + 100, random.randint(50, 1030))
