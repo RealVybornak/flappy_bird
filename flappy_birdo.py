@@ -10,12 +10,12 @@ from pygame.locals import (
 )
 
 global y
-global size_lower
+global size
 global spawn_time
 
 score = 0
 speed = 5
-spawn_time = 3500
+spawn_time = 3428
 
 pygame.init()
 
@@ -59,14 +59,15 @@ class Player(pygame.sprite.Sprite):
 
 class Obsticles_Lower(pygame.sprite.Sprite):
     def __init__(self):
-        global size_lower
+        global size
         super(Obsticles_Lower, self).__init__()
-        size_lower = random.randint(-325, 325)
+        size = random.randint(695,1365)
         self.surf = pygame.image.load("pipe_lower.png").convert()
         self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(
-            center=(screen_width + 100, (screen_height + size_lower))
+            center=(screen_width + 100, size)
         )
+        print(size)
 
     def update(self):
         self.rect.move_ip(-speed, 0)
@@ -80,8 +81,9 @@ class Obsticles_Upper(pygame.sprite.Sprite):
         self.surf = pygame.image.load("pipe_upper.png").convert()
         self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(
-            center=(screen_width + 100, (screen_height - size_upper) - 605)
+            center=(screen_width + 100, (size - 980-250))
         )
+        print(size)
 
     def update(self):
         self.rect.move_ip(-speed, 0)
@@ -154,7 +156,6 @@ while running:
             running = False
 
         elif event.type == ADDOBSTICLE_LOWER:
-            size_lower = random.randint(100, 780)
             new_lower_obsticle = Obsticles_Lower()
             lower.add(new_lower_obsticle)
             sprites.add(new_lower_obsticle)
@@ -207,30 +208,50 @@ while running:
 
     if score == 10:
         speed = 7
-        spawn_time = 2500
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+        spawn_time = 2463
+        ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
         pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
+
+        ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
+        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+
+        POINTWALL = pygame.USEREVENT + 3
         pygame.time.set_timer(POINTWALL, spawn_time)
         score += 1
     if score == 25:
         speed = 9
-        spawn_time = 2142
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+        spawn_time = 1927
+        ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
         pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
+
+        ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
+        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+
+        POINTWALL = pygame.USEREVENT + 3
         pygame.time.set_timer(POINTWALL, spawn_time)
         score += 1
     if score == 50:
         speed = 13
-        spawn_time = 1153
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+        spawn_time = 1350
+        ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
         pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
+
+        ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
+        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+
+        POINTWALL = pygame.USEREVENT + 3
         pygame.time.set_timer(POINTWALL, spawn_time)
         score += 1
     if score == 100:
         speed = 50
-        spawn_time = 300
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+        spawn_time = 388
+        ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
         pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
+
+        ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
+        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+
+        POINTWALL = pygame.USEREVENT + 3
         pygame.time.set_timer(POINTWALL, spawn_time)
         score += 1
     pygame.display.flip()
