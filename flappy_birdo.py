@@ -9,52 +9,60 @@ from pygame.locals import (
     QUIT,
 )
 
-global y
-global size
-global spawn_time
+global SPEED
+global SPAWN_TIME
 
-score = 0
-speed = 5
-spawn_time = 3428
+REAL_SCORE = 0
+SCORE = 0
+SPEED = 5
+SPAWN_TIME = 3478
+
+
+
+print("\n")
+print(pygame.font.get_fonts())
+print("\n")
 
 pygame.init()
+pygame.font.init()
 
-screen_width = 1920
-screen_height = 1080
+# Score counter variables
+score_font = pygame.font.SysFont('segoescript', 75, True)
+black = (0,0,0)
+
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
+
+def draw_text(text, font, text_color, x_coords, y_coords):
+    img = font.render(text, True, text_color)
+    screen.blit(img, (x_coords,y_coords))
 
 clock = pygame.time.Clock()
 
 class Player(pygame.sprite.Sprite):
+    global GRAVITY
+    GRAVITY = 1
+    print(GRAVITY)
     def __init__(self):
         super(Player, self).__init__()
         self.surf = pygame.image.load("flappy.png").convert()
         self.surf.set_colorkey((255, 255, 255))
-        self.rect = self.surf.get_rect(center=(screen_width / 2, screen_height / 2))
+        self.rect = self.surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+
+    
 
     def movement(self, pressd_keys):
-        global y
+        global GRAVITY
         if pressd_keys[K_SPACE]:
-            y = 0
+            GRAVITY = 0
             self.rect.move_ip(0, -20)
-            if pressd_keys == KEYDOWN:
-                if pressd_keys == [K_ESCAPE]:
-                    self.rect.move_ip(0, 20)
+        else: 
+            GRAVITY += 0.5
+            self.rect.move_ip(0,GRAVITY)
 
-        else:
-            try:
-                if y == False:
-                    y = 1
-            except:
-                y = 1
-            y += 2
-            if y < 100:
-                self.rect.move_ip(0, y / 4)
-            else:
-                y = 100
-                self.rect.move_ip(0, y / 4)
 
         self.rect.top = max(self.rect.top, 0)
-        self.rect.bottom = min(self.rect.bottom, screen_height)
+        self.rect.bottom = min(self.rect.bottom, SCREEN_HEIGHT)
 
 
 class Obsticles_Lower(pygame.sprite.Sprite):
@@ -65,12 +73,12 @@ class Obsticles_Lower(pygame.sprite.Sprite):
         self.surf = pygame.image.load("pipe_lower.png").convert()
         self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(
-            center=(screen_width + 100, size)
+            center=(SCREEN_WIDTH + 100, size)
         )
-        print(size)
+
 
     def update(self):
-        self.rect.move_ip(-speed, 0)
+        self.rect.move_ip(-SPEED, 0)
         if self.rect.right < 0:
             self.kill()
 
@@ -81,12 +89,11 @@ class Obsticles_Upper(pygame.sprite.Sprite):
         self.surf = pygame.image.load("pipe_upper.png").convert()
         self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(
-            center=(screen_width + 100, (size - 980-250))
+            center=(SCREEN_WIDTH + 100, (size - 780-250))
         )
-        print(size)
 
     def update(self):
-        self.rect.move_ip(-speed, 0)
+        self.rect.move_ip(-SPEED, 0)
         if self.rect.right < 0:
             self.kill()
 
@@ -96,10 +103,10 @@ class Points(pygame.sprite.Sprite):
         super(Points, self).__init__()
         self.surf = pygame.Surface((50, 1080))
         self.surf.fill((135, 0, 250))
-        self.rect = self.surf.get_rect(center=(screen_width + 100, 540))
+        self.rect = self.surf.get_rect(center=(SCREEN_WIDTH + 100, 540))
 
     def update(self):
-        self.rect.move_ip(-speed, 0)
+        self.rect.move_ip(-SPEED, 0)
         if self.rect.right < 0:
             self.kill()
 
@@ -110,18 +117,18 @@ class Clouds(pygame.sprite.Sprite):
         self.surf = pygame.image.load("cloud_2.png").convert()
         self.surf.set_colorkey((0, 0, 0))
         self.rect = self.surf.get_rect(
-            center=(screen_width + 100, random.randint(50, 1030))
+            center=(SCREEN_WIDTH + 100, random.randint(50, 1030))
         )
 
     def update(self):
-        self.rect.move_ip(-speed, 0)
+        self.rect.move_ip(-SPEED, 0)
         if self.rect.right < 0:
             self.kill()
 
 
 pygame.init()
 
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 player = Player()
 
@@ -135,13 +142,13 @@ sprites.add(player)
 running = True
 
 ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
+pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
 ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
 
 POINTWALL = pygame.USEREVENT + 3
-pygame.time.set_timer(POINTWALL, spawn_time)
+pygame.time.set_timer(POINTWALL, SPAWN_TIME)
 
 CLOUD = pygame.USEREVENT + 4
 pygame.time.set_timer(CLOUD, random.randint(250, 750))
@@ -187,6 +194,8 @@ while running:
 
     screen.fill((135, 206, 250))
 
+    draw_text(str(REAL_SCORE), score_font, black, SCREEN_WIDTH/2, 100)
+
     for entity in sprites:
         screen.blit(entity.surf, entity.rect)
 
@@ -198,74 +207,74 @@ while running:
         player.kill()
         running = False
 
-    if pygame.sprite.spritecollide(player, pointwall, pointwall):
-        score += 1
-        print(score)
+    if pygame.sprite.spritecollide(player, pointwall, True):
+        SCORE += 1
+        REAL_SCORE += 1
         new_point.kill()
 
     if pygame.sprite.groupcollide(pointwall, clouds, False, True):
         new_cloud.kill()
 
-    if score == 10:
-        speed = 7
-        spawn_time = 2463
+    if SCORE == 10:
+        SPEED = 7
+        SPAWN_TIME = 2513
         ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-        pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
+        pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
         ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+        pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
 
         POINTWALL = pygame.USEREVENT + 3
-        pygame.time.set_timer(POINTWALL, spawn_time)
-        score += 1
-    if score == 25:
-        speed = 9
-        spawn_time = 1927
+        pygame.time.set_timer(POINTWALL, SPAWN_TIME)
+        SCORE += 1
+    if SCORE == 25:
+        SPEED = 9
+        SPAWN_TIME = 1977
         ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-        pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
+        pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
         ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+        pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
 
         POINTWALL = pygame.USEREVENT + 3
-        pygame.time.set_timer(POINTWALL, spawn_time)
-        score += 1
-    if score == 50:
-        speed = 13
-        spawn_time = 1350
+        pygame.time.set_timer(POINTWALL, SPAWN_TIME)
+        SCORE += 1
+    if SCORE == 50:
+        SPEED = 13
+        SPAWN_TIME = 1400
         ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-        pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
+        pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
         ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+        pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
 
         POINTWALL = pygame.USEREVENT + 3
-        pygame.time.set_timer(POINTWALL, spawn_time)
-        score += 1
-    if score == 100:
-        speed = 50
-        spawn_time = 388
+        pygame.time.set_timer(POINTWALL, SPAWN_TIME)
+        SCORE += 1
+    if SCORE == 100:
+        SPEED = 50
+        SPAWN_TIME = 400
         ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-        pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
+        pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
         ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
+        pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
 
         POINTWALL = pygame.USEREVENT + 3
-        pygame.time.set_timer(POINTWALL, spawn_time)
-        score += 1
+        pygame.time.set_timer(POINTWALL, SPAWN_TIME)
+        SCORE += 1
     pygame.display.flip()
 
     clock.tick(60)
 
-try:
-    if HighestScore > 99999999999:
-        print("damn")
-    else:
-        print("=" * 50)
-except:
-    HighestScore = 0
-
-if HighestScore < score:
-    HighestScore = int(score)
-    print("New highest score achived", HighestScore)
+#try:
+#    if HighestScore > 99999999999:
+#        print("damn")
+#    else:
+#        print("=" * 50)
+#except:
+#    HighestScore = 0
+#
+#if HighestScore < score:
+#    HighestScore = int(score)
+#    print("New highest score achived", HighestScore)
