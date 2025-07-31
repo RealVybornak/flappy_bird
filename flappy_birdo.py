@@ -1,5 +1,4 @@
 """Flappy Bird game implemented in Python using Pygame package"""
-
 import random
 import pygame
 from pygame.locals import (
@@ -12,16 +11,11 @@ from pygame.locals import (
 global SPEED
 global SPAWN_TIME
 
+# Variables
 REAL_SCORE = 0
 SCORE = 0
 SPEED = 5
-SPAWN_TIME = 3478
-
-
-
-print("\n")
-print(pygame.font.get_fonts())
-print("\n")
+SPAWN_TIME = 2000
 
 pygame.init()
 pygame.font.init()
@@ -30,15 +24,20 @@ pygame.font.init()
 score_font = pygame.font.SysFont('segoescript', 75, True)
 black = (0,0,0)
 
+# Size of the window
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 
+
+# Function for text to apear on screen
 def draw_text(text, font, text_color, x_coords, y_coords):
     img = font.render(text, True, text_color)
     screen.blit(img, (x_coords,y_coords))
 
+# Used for tick speed
 clock = pygame.time.Clock()
 
+# Classes
 class Player(pygame.sprite.Sprite):
     global GRAVITY
     GRAVITY = 1
@@ -124,14 +123,41 @@ class Clouds(pygame.sprite.Sprite):
         self.rect.move_ip(-SPEED, 0)
         if self.rect.right < 0:
             self.kill()
+            
+class Start(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Start, self).__init__()
+        self.surf = pygame.image.load("start_button.png").convert()
+        self.surf.set_colorkey((255,255,255))
+        self.rect = self.surf.get_rect(
+            center=(1100, 750)
+        )
 
+class Quit(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Start, self).__init__()
+        self.surf = pygame.image.load("quit_button.png").convert()
+        self.surf.set_colorkey((255,255,255))
+        self.rect = self.surf.get_rect(
+            center=(600, 750)
+        )
 
-pygame.init()
+class Title_name(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Start, self).__init__()
+        self.surf = pygame.image.load("Title.png").convert()
+        self.surf.set_colorkey((255,255,255))
+        self.rect = self.surf.get_rect(
+            center=(900,300)
+        )
 
+# Window set up
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+# Creating a player 
 player = Player()
 
+# Groups
 pointwall = pygame.sprite.Group()
 lower = pygame.sprite.Group()
 upper = pygame.sprite.Group()
@@ -139,8 +165,10 @@ clouds = pygame.sprite.Group()
 sprites = pygame.sprite.Group()
 sprites.add(player)
 
+# Set up for Main game loop
 running = True
 
+# Spawning each sprite for class
 ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
 pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
@@ -153,6 +181,7 @@ pygame.time.set_timer(POINTWALL, SPAWN_TIME)
 CLOUD = pygame.USEREVENT + 4
 pygame.time.set_timer(CLOUD, random.randint(250, 750))
 
+# Main game loop
 while running:
     for event in pygame.event.get():
         if event.type == KEYDOWN:
@@ -183,22 +212,27 @@ while running:
             sprites.add(new_cloud)
 
 
-
+    # Movement for player
     pressed_keys = pygame.key.get_pressed()
     player.movement(pressed_keys)
 
+    # Movement for other sprites
     lower.update()
     upper.update()
     pointwall.update()
     clouds.update()
 
+    # Background
     screen.fill((135, 206, 250))
 
+    # Score counter
     draw_text(str(REAL_SCORE), score_font, black, SCREEN_WIDTH/2, 100)
 
+    # Drawing every sprite
     for entity in sprites:
         screen.blit(entity.surf, entity.rect)
 
+    # Collisions between sprites
     if pygame.sprite.spritecollide(player, lower, upper):
         player.kill()
         running = False
@@ -210,14 +244,15 @@ while running:
     if pygame.sprite.spritecollide(player, pointwall, True):
         SCORE += 1
         REAL_SCORE += 1
-        new_point.kill()
+
 
     if pygame.sprite.groupcollide(pointwall, clouds, False, True):
         new_cloud.kill()
 
+    # Difficulty increase (speed and spawn time is changed)
     if SCORE == 10:
         SPEED = 7
-        SPAWN_TIME = 2513
+        SPAWN_TIME = 1400
         ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
         pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
@@ -229,7 +264,7 @@ while running:
         SCORE += 1
     if SCORE == 25:
         SPEED = 9
-        SPAWN_TIME = 1977
+        SPAWN_TIME = 1200
         ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
         pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
@@ -241,7 +276,7 @@ while running:
         SCORE += 1
     if SCORE == 50:
         SPEED = 13
-        SPAWN_TIME = 1400
+        SPAWN_TIME = 900
         ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
         pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
@@ -252,8 +287,8 @@ while running:
         pygame.time.set_timer(POINTWALL, SPAWN_TIME)
         SCORE += 1
     if SCORE == 100:
-        SPEED = 50
-        SPAWN_TIME = 400
+        SPEED = 25
+        SPAWN_TIME = 800
         ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
         pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
@@ -263,18 +298,9 @@ while running:
         POINTWALL = pygame.USEREVENT + 3
         pygame.time.set_timer(POINTWALL, SPAWN_TIME)
         SCORE += 1
+    
+    # Making everting work
     pygame.display.flip()
 
+    # Setting tickspeed
     clock.tick(60)
-
-#try:
-#    if HighestScore > 99999999999:
-#        print("damn")
-#    else:
-#        print("=" * 50)
-#except:
-#    HighestScore = 0
-#
-#if HighestScore < score:
-#    HighestScore = int(score)
-#    print("New highest score achived", HighestScore)
