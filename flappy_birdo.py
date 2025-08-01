@@ -6,6 +6,7 @@ from pygame.locals import (
     K_SPACE,
     KEYDOWN,
     QUIT,
+    MOUSEBUTTONDOWN,
 )
 
 global SPEED
@@ -100,9 +101,9 @@ class Obsticles_Upper(pygame.sprite.Sprite):
 class Points(pygame.sprite.Sprite):
     def __init__(self):
         super(Points, self).__init__()
-        self.surf = pygame.Surface((50, 1080))
+        self.surf = pygame.Surface((50, SCREEN_HEIGHT))
         self.surf.fill((135, 0, 250))
-        self.rect = self.surf.get_rect(center=(SCREEN_WIDTH + 100, 540))
+        self.rect = self.surf.get_rect(center=(SCREEN_WIDTH + 100, SCREEN_HEIGHT/2))
 
     def update(self):
         self.rect.move_ip(-SPEED, 0)
@@ -130,26 +131,36 @@ class Start(pygame.sprite.Sprite):
         self.surf = pygame.image.load("start_button.png").convert()
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
-            center=(1100, 750)
+            center=(1320, 750)
         )
 
 class Quit(pygame.sprite.Sprite):
     def __init__(self):
-        super(Start, self).__init__()
+        super(Quit, self).__init__()
         self.surf = pygame.image.load("quit_button.png").convert()
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
             center=(600, 750)
         )
 
-class Title_name(pygame.sprite.Sprite):
+class Title(pygame.sprite.Sprite):
     def __init__(self):
-        super(Start, self).__init__()
-        self.surf = pygame.image.load("Title.png").convert()
+        super(Title, self).__init__()
+        self.surf = pygame.image.load("Title_name.png").convert()
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
-            center=(900,300)
+            center=(960,300)
         )
+
+class Dummy_bird(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Dummy_bird, self).__init__()
+        self.surf = pygame.image.load("dummy_flappy.png").convert()
+        self.surf.set_colorkey((255,255,255))
+        self.rect = self.surf.get_rect(
+            center=(960,500)
+        )
+    
 
 # Window set up
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -162,11 +173,13 @@ pointwall = pygame.sprite.Group()
 lower = pygame.sprite.Group()
 upper = pygame.sprite.Group()
 clouds = pygame.sprite.Group()
-sprites = pygame.sprite.Group()
-sprites.add(player)
+menu_sprites = pygame.sprite.Group()
+ingame_sprites = pygame.sprite.Group()
+ingame_sprites.add(player)
 
-# Set up for Main game loop
+# Set up for Main game loop and Menu game loop
 running = True
+menu = True
 
 # Spawning each sprite for class
 ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
@@ -181,6 +194,48 @@ pygame.time.set_timer(POINTWALL, SPAWN_TIME)
 CLOUD = pygame.USEREVENT + 4
 pygame.time.set_timer(CLOUD, random.randint(250, 750))
 
+quit_button = Quit()
+menu_sprites.add(quit_button)
+
+start_button = Start()
+menu_sprites.add(start_button)
+
+game_name = Title()
+menu_sprites.add(game_name)
+
+dummy = Dummy_bird()
+menu_sprites.add(dummy)
+
+# Menu loop
+while menu:
+    screen.fill((135, 206, 250))
+    for menu_enitity in  menu_sprites:
+        screen.blit(menu_enitity.surf, menu_enitity.rect)
+
+    for event in pygame.event.get():
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                running = False
+                menu = False
+
+        elif event.type == QUIT:
+            running = False
+            menu = False
+
+        elif event.type == MOUSEBUTTONDOWN:
+            cursor_position = pygame.mouse.get_pos()
+
+            if 1019 < cursor_position[0] < 1619:
+                if 600 < cursor_position[1] < 898:
+                    menu = False
+
+            if 300 < cursor_position[0] < 889:
+                if 600 < cursor_position[1] < 897:
+                    menu = False
+                    running = False
+
+    pygame.display.flip()
+
 # Main game loop
 while running:
     for event in pygame.event.get():
@@ -194,22 +249,22 @@ while running:
         elif event.type == ADDOBSTICLE_LOWER:
             new_lower_obsticle = Obsticles_Lower()
             lower.add(new_lower_obsticle)
-            sprites.add(new_lower_obsticle)
+            ingame_sprites.add(new_lower_obsticle)
 
         elif event.type == ADDOBSTICLE_UPPER:
             new_upper_obsticle = Obsticles_Upper()
             upper.add(new_upper_obsticle)
-            sprites.add(new_upper_obsticle)
+            ingame_sprites.add(new_upper_obsticle)
 
         elif event.type == POINTWALL:
             new_point = Points()
             pointwall.add(new_point)
-            sprites.add(new_point)
+            ingame_sprites.add(new_point)
 
         elif event.type == CLOUD:
             new_cloud = Clouds()
             clouds.add(new_cloud)
-            sprites.add(new_cloud)
+            ingame_sprites.add(new_cloud)
 
 
     # Movement for player
@@ -229,7 +284,7 @@ while running:
     draw_text(str(REAL_SCORE), score_font, black, SCREEN_WIDTH/2, 100)
 
     # Drawing every sprite
-    for entity in sprites:
+    for entity in ingame_sprites:
         screen.blit(entity.surf, entity.rect)
 
     # Collisions between sprites
