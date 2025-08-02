@@ -9,14 +9,12 @@ from pygame.locals import (
     MOUSEBUTTONDOWN,
 )
 
-global SPEED
-global SPAWN_TIME
-
 # Variables
 REAL_SCORE = 0
 SCORE = 0
 SPEED = 5
 SPAWN_TIME = 2000
+HIGHEST_SCORE = 0
 
 pygame.init()
 pygame.font.init()
@@ -40,9 +38,9 @@ clock = pygame.time.Clock()
 
 # Classes
 class Player(pygame.sprite.Sprite):
-    global GRAVITY
-    GRAVITY = 1
-    print(GRAVITY)
+    global VELOCITY
+    VELOCITY = 1
+    print(VELOCITY)
     def __init__(self):
         super(Player, self).__init__()
         self.surf = pygame.image.load("flappy.png").convert()
@@ -52,13 +50,15 @@ class Player(pygame.sprite.Sprite):
     
 
     def movement(self, pressd_keys):
-        global GRAVITY
+        global VELOCITY
         if pressd_keys[K_SPACE]:
-            GRAVITY = 0
+            if VELOCITY > 0:
+                VELOCITY = 0
             self.rect.move_ip(0, -20)
+            VELOCITY -= 0.75
         else: 
-            GRAVITY += 0.5
-            self.rect.move_ip(0,GRAVITY)
+            VELOCITY += 0.5
+            self.rect.move_ip(0,VELOCITY)
 
 
         self.rect.top = max(self.rect.top, 0)
@@ -143,6 +143,25 @@ class Quit(pygame.sprite.Sprite):
             center=(600, 750)
         )
 
+class Menu(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Menu, self).__init__()
+        self.surf = pygame.image.load("menu_button.png").convert()
+        self.surf.set_colorkey((255,255,255))
+        self.rect = self.surf.get_rect(
+            center=(1320, 750)
+        )
+
+class Retry(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Retry, self).__init__()
+        self.surf = pygame.image.load("retry_button.png").convert()
+        self.surf.set_colorkey((255,255,255))
+        self.rect = self.surf.get_rect(
+            center=(600, 750)
+        )
+
+
 class Title(pygame.sprite.Sprite):
     def __init__(self):
         super(Title, self).__init__()
@@ -165,10 +184,11 @@ class Dummy_bird(pygame.sprite.Sprite):
 # Window set up
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+
 # Creating a player 
 player = Player()
 
-# Groups
+# Creating groups
 pointwall = pygame.sprite.Group()
 lower = pygame.sprite.Group()
 upper = pygame.sprite.Group()
@@ -176,12 +196,16 @@ clouds = pygame.sprite.Group()
 menu_sprites = pygame.sprite.Group()
 ingame_sprites = pygame.sprite.Group()
 ingame_sprites.add(player)
+death_sprites = pygame.sprite.Group()
 
-# Set up for Main game loop and Menu game loop
-running = True
+# Set up for Game loop
+main_loop = True
+running = False
 menu = True
+death = False
+quit = 0
 
-# Spawning each sprite for class
+# Setting up each sprite for class and their timers
 ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
 pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
@@ -200,162 +224,266 @@ menu_sprites.add(quit_button)
 start_button = Start()
 menu_sprites.add(start_button)
 
+menu_button = Menu()
+death_sprites.add(menu_button)
+
+retry_button = Retry()
+death_sprites.add(retry_button)
+
 game_name = Title()
 menu_sprites.add(game_name)
 
 dummy = Dummy_bird()
 menu_sprites.add(dummy)
+while main_loop:
+    # Menu loop
+    while menu:
+        screen.fill((135, 206, 250))
+        for menu_enitity in  menu_sprites:
+            screen.blit(menu_enitity.surf, menu_enitity.rect)
 
-# Menu loop
-while menu:
-    screen.fill((135, 206, 250))
-    for menu_enitity in  menu_sprites:
-        screen.blit(menu_enitity.surf, menu_enitity.rect)
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    quit = 1
+                    menu = False
 
-    for event in pygame.event.get():
-        if event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
-                running = False
+
+            elif event.type == QUIT:
+                quit = 1
                 menu = False
 
-        elif event.type == QUIT:
-            running = False
-            menu = False
+            elif event.type == MOUSEBUTTONDOWN:
+                cursor_position = pygame.mouse.get_pos()
 
-        elif event.type == MOUSEBUTTONDOWN:
-            cursor_position = pygame.mouse.get_pos()
+                if 1019 < cursor_position[0] < 1619:
+                    if 600 < cursor_position[1] < 898:
+                        running = True
+                        menu = False   
 
-            if 1019 < cursor_position[0] < 1619:
-                if 600 < cursor_position[1] < 898:
-                    menu = False
+                if 300 < cursor_position[0] < 889:
+                    if 600 < cursor_position[1] < 897:
+                        quit = 1
+                        menu = False
 
-            if 300 < cursor_position[0] < 889:
-                if 600 < cursor_position[1] < 897:
-                    menu = False
+
+        pygame.display.flip()
+
+    # Mechanism for turning of the game
+    if quit == 1:
+        break
+
+    # Main game loop
+    while running:
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    quit = 1
                     running = False
 
-    pygame.display.flip()
+            elif event.type == QUIT:
+                    quit = 1
+                    running = False
 
-# Main game loop
-while running:
-    for event in pygame.event.get():
-        if event.type == KEYDOWN:
-            if event.key == K_ESCAPE:
-                running = False
+            elif event.type == ADDOBSTICLE_LOWER:
+                new_lower_obsticle = Obsticles_Lower()
+                lower.add(new_lower_obsticle)
+                ingame_sprites.add(new_lower_obsticle)
 
-        elif event.type == QUIT:
+            elif event.type == ADDOBSTICLE_UPPER:
+                new_upper_obsticle = Obsticles_Upper()
+                upper.add(new_upper_obsticle)
+                ingame_sprites.add(new_upper_obsticle)
+
+            elif event.type == POINTWALL:
+                new_point = Points()
+                pointwall.add(new_point)
+                ingame_sprites.add(new_point)
+
+            elif event.type == CLOUD:
+                new_cloud = Clouds()
+                clouds.add(new_cloud)
+                ingame_sprites.add(new_cloud)
+
+
+        # Movement for player
+        pressed_keys = pygame.key.get_pressed()
+        player.movement(pressed_keys)
+
+        # Movement for other sprites
+        lower.update()
+        upper.update()
+        pointwall.update()
+        clouds.update()
+
+        # Background
+        screen.fill((135, 206, 250))
+
+        # Score counter
+        draw_text(str(REAL_SCORE), score_font, black, SCREEN_WIDTH/2, 100)
+
+        # Drawing every sprite
+        for entity in ingame_sprites:
+            screen.blit(entity.surf, entity.rect)
+
+        # Collisions between sprites
+        if pygame.sprite.spritecollide(player, lower, upper):
+            player.kill()
+            death = True
             running = False
 
-        elif event.type == ADDOBSTICLE_LOWER:
-            new_lower_obsticle = Obsticles_Lower()
-            lower.add(new_lower_obsticle)
-            ingame_sprites.add(new_lower_obsticle)
+        if pygame.sprite.spritecollide(player, upper, lower):
+            player.kill()
+            death = True
+            running = False
 
-        elif event.type == ADDOBSTICLE_UPPER:
-            new_upper_obsticle = Obsticles_Upper()
-            upper.add(new_upper_obsticle)
-            ingame_sprites.add(new_upper_obsticle)
+        if pygame.sprite.spritecollide(player, pointwall, True):
+            SCORE += 1
+            REAL_SCORE += 1
+            if HIGHEST_SCORE < REAL_SCORE:
+                HIGHEST_SCORE = 0
+                HIGHEST_SCORE += REAL_SCORE
 
-        elif event.type == POINTWALL:
-            new_point = Points()
-            pointwall.add(new_point)
-            ingame_sprites.add(new_point)
+        if pygame.sprite.groupcollide(pointwall, clouds, False, True):
+            new_cloud.kill()
 
-        elif event.type == CLOUD:
-            new_cloud = Clouds()
-            clouds.add(new_cloud)
-            ingame_sprites.add(new_cloud)
+        # Difficulty increase (speed and spawn time is changed)
+        if SCORE == 10:
+            SPEED = 7
+            SPAWN_TIME = 1400
+            ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
+            pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+
+            ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
+            pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+
+            POINTWALL = pygame.USEREVENT + 3
+            pygame.time.set_timer(POINTWALL, SPAWN_TIME)
+            SCORE += 1
+        if SCORE == 25:
+            SPEED = 9
+            SPAWN_TIME = 1200
+            ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
+            pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+
+            ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
+            pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+
+            POINTWALL = pygame.USEREVENT + 3
+            pygame.time.set_timer(POINTWALL, SPAWN_TIME)
+            SCORE += 1
+        if SCORE == 51:
+            SPEED = 13
+            SPAWN_TIME = 900
+            ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
+            pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+
+            ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
+            pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+
+            POINTWALL = pygame.USEREVENT + 3
+            pygame.time.set_timer(POINTWALL, SPAWN_TIME)
+            SCORE += 1
+        if SCORE == 102:
+            SPEED = 25
+            SPAWN_TIME = 800
+            ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
+            pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+
+            ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
+            pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+
+            POINTWALL = pygame.USEREVENT + 3
+            pygame.time.set_timer(POINTWALL, SPAWN_TIME)
+            SCORE += 1
+        
+        # Making everting work
+        pygame.display.flip()
+
+        # Setting tickspeed
+        clock.tick(60)
+
+    # Mechanism for turning of the game
+    if quit == 1:
+        break
+
+    while death:
+        screen.fill((135, 206, 250))
+        for death_enitity in death_sprites:
+            screen.blit(death_enitity.surf, death_enitity.rect)
+
+        draw_text(f"Highest achived score: {str(HIGHEST_SCORE)}", score_font, black, SCREEN_WIDTH/2-480, 200)
+        
+        for event in pygame.event.get():
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    quit = 1
+                    death = False
 
 
-    # Movement for player
-    pressed_keys = pygame.key.get_pressed()
-    player.movement(pressed_keys)
+            elif event.type == QUIT:
+                quit = 1
+                death = False
 
-    # Movement for other sprites
-    lower.update()
-    upper.update()
-    pointwall.update()
-    clouds.update()
+            elif event.type == MOUSEBUTTONDOWN:
+                cursor_position = pygame.mouse.get_pos()
 
-    # Background
-    screen.fill((135, 206, 250))
+                if 1019 < cursor_position[0] < 1619:
+                    if 600 < cursor_position[1] < 898:
+                        menu = True
+                        death = False 
 
-    # Score counter
-    draw_text(str(REAL_SCORE), score_font, black, SCREEN_WIDTH/2, 100)
-
-    # Drawing every sprite
-    for entity in ingame_sprites:
-        screen.blit(entity.surf, entity.rect)
-
-    # Collisions between sprites
-    if pygame.sprite.spritecollide(player, lower, upper):
-        player.kill()
-        running = False
-
-    if pygame.sprite.spritecollide(player, upper, lower):
-        player.kill()
-        running = False
-
-    if pygame.sprite.spritecollide(player, pointwall, True):
-        SCORE += 1
-        REAL_SCORE += 1
+                if 300 < cursor_position[0] < 889:
+                    if 600 < cursor_position[1] < 897:
+                        running = True
+                        death = False
 
 
-    if pygame.sprite.groupcollide(pointwall, clouds, False, True):
-        new_cloud.kill()
+        pygame.display.flip()
 
-    # Difficulty increase (speed and spawn time is changed)
-    if SCORE == 10:
-        SPEED = 7
-        SPAWN_TIME = 1400
-        ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-        pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+    # Respawning player 
+    player = Player()
 
-        ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+    # Reseting variables
+    REAL_SCORE = 0
+    SCORE = 0
+    SPEED = 5
+    SPAWN_TIME = 2000
 
-        POINTWALL = pygame.USEREVENT + 3
-        pygame.time.set_timer(POINTWALL, SPAWN_TIME)
-        SCORE += 1
-    if SCORE == 25:
-        SPEED = 9
-        SPAWN_TIME = 1200
-        ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-        pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+    # Restarting groups
+    pointwall = pygame.sprite.Group()
+    lower = pygame.sprite.Group()
+    upper = pygame.sprite.Group()
+    clouds = pygame.sprite.Group()
+    menu_sprites = pygame.sprite.Group()
+    ingame_sprites = pygame.sprite.Group()
+    ingame_sprites.add(player)
 
-        ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+    # Restarting timers and each sprite in a class
+    ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
+    pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
 
-        POINTWALL = pygame.USEREVENT + 3
-        pygame.time.set_timer(POINTWALL, SPAWN_TIME)
-        SCORE += 1
-    if SCORE == 50:
-        SPEED = 13
-        SPAWN_TIME = 900
-        ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-        pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+    ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
+    pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
 
-        ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+    POINTWALL = pygame.USEREVENT + 3
+    pygame.time.set_timer(POINTWALL, SPAWN_TIME)
 
-        POINTWALL = pygame.USEREVENT + 3
-        pygame.time.set_timer(POINTWALL, SPAWN_TIME)
-        SCORE += 1
-    if SCORE == 100:
-        SPEED = 25
-        SPAWN_TIME = 800
-        ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-        pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+    CLOUD = pygame.USEREVENT + 4
+    pygame.time.set_timer(CLOUD, random.randint(250, 750))
 
-        ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-        pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+    quit_button = Quit()
+    menu_sprites.add(quit_button)
 
-        POINTWALL = pygame.USEREVENT + 3
-        pygame.time.set_timer(POINTWALL, SPAWN_TIME)
-        SCORE += 1
+    start_button = Start()
+    menu_sprites.add(start_button)
+
+    game_name = Title()
+    menu_sprites.add(game_name)
+
+    dummy = Dummy_bird()
+    menu_sprites.add(dummy)
     
-    # Making everting work
-    pygame.display.flip()
-
-    # Setting tickspeed
-    clock.tick(60)
+    # Mechanism for turning of the game
+    if quit == 1:
+        break
