@@ -70,7 +70,7 @@ Game is simple and almost identical to the game Flappy bird. The game is played 
 
 10. custom music
 
-    maybe trying to add my own melody that i will play (afterall i have a electric guitar).
+    maybe trying to add my own melody that i will play.
 
 ## Game parts
   1. Menu

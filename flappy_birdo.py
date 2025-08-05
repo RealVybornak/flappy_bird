@@ -9,12 +9,24 @@ from pygame.locals import (
     MOUSEBUTTONDOWN,
 )
 
+# Preperations for saving and loading the highest score
+try:
+    fc = open('Highest_score.txt','x')
+except:
+    print("all good")
+else:
+    with open('Highest_score.txt','w') as f:
+        f.write("0")
+
+FILE = open('Highest_score.txt')
+INFILE_SCORE = FILE.read()
+HIGHEST_SCORE = int(INFILE_SCORE)
+
 # Variables
 REAL_SCORE = 0
 SCORE = 0
-SPEED = 5
+SPEED = 5                           
 SPAWN_TIME = 2000
-HIGHEST_SCORE = 0
 
 pygame.init()
 pygame.font.init()
@@ -340,9 +352,6 @@ while main_loop:
         if pygame.sprite.spritecollide(player, pointwall, True):
             SCORE += 1
             REAL_SCORE += 1
-            if HIGHEST_SCORE < REAL_SCORE:
-                HIGHEST_SCORE = 0
-                HIGHEST_SCORE += REAL_SCORE
 
         if pygame.sprite.groupcollide(pointwall, clouds, False, True):
             new_cloud.kill()
@@ -360,7 +369,7 @@ while main_loop:
             POINTWALL = pygame.USEREVENT + 3
             pygame.time.set_timer(POINTWALL, SPAWN_TIME)
             SCORE += 1
-        if SCORE == 25:
+        if SCORE == 26:
             SPEED = 9
             SPAWN_TIME = 1200
             ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
@@ -372,7 +381,7 @@ while main_loop:
             POINTWALL = pygame.USEREVENT + 3
             pygame.time.set_timer(POINTWALL, SPAWN_TIME)
             SCORE += 1
-        if SCORE == 51:
+        if SCORE == 52:
             SPEED = 13
             SPAWN_TIME = 900
             ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
@@ -384,7 +393,7 @@ while main_loop:
             POINTWALL = pygame.USEREVENT + 3
             pygame.time.set_timer(POINTWALL, SPAWN_TIME)
             SCORE += 1
-        if SCORE == 102:
+        if SCORE == 103:
             SPEED = 25
             SPAWN_TIME = 800
             ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
@@ -413,7 +422,15 @@ while main_loop:
             screen.blit(death_enitity.surf, death_enitity.rect)
 
         draw_text(f"Highest achived score: {str(HIGHEST_SCORE)}", score_font, black, SCREEN_WIDTH/2-480, 200)
-        
+
+        try:          
+            if HIGHEST_SCORE < REAL_SCORE:
+                New_Score = str(REAL_SCORE)
+                with open('Highest_score.txt','w') as f:
+                    f.write(New_Score)
+        except:
+            print("u are cooked")
+
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -487,3 +504,7 @@ while main_loop:
     # Mechanism for turning of the game
     if quit == 1:
         break
+
+
+
+    # this is all written by me :)
