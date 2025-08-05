@@ -75,23 +75,26 @@ Game is simple and almost identical to the game Flappy bird. The game is played 
 ## Game parts
   1. Menu
       
-      Menu is being worked on now so it has nice look and some meaning and mainly that it works. Have a setting button that will have just music setting. Also i might add the "Leaderboard" button where you can compare your highest score with others.
+    Menu is simple and has just Start button and quit button and that all for now.
+    Menu is currently mostly finished it could look nicer in the future but now it's enough. Setting in menu will be worked on after i add sound effects and music because probably that will the only thing in settings.
 
   2. Gameplay
       
       1. Bird
 
-          One of the most important parts of the game is the bird by it self curently it is a nice yellow brick which i plan to change so it's nicer. Also i wanna try to make acurate hitboxes bit depends how hard it will be.
-          
+            Bird works simply with the help of spaceba. Spacebar can either be held or just pressed quickly. It has my try of making it more like the real game but the holding doesn't really help it.
+            Bird is kinda in the work right now i want to make it so u cant hold the space bar. Also want to make him some animations se he can like flap his wings when you press space bar.
+
       2. pipes
 
-          Pipes as of now just need textures and might add so they move up and down to up the difficulty, because who likes when things are too easy.
-          But now i just wanna make sure they aren't giant green bricks and look pleasing. The design will be inspirated by pipes from Mario.
+            Pipes are both seperate so we have 2 classes upper pipe and lower pipe both spawn at the same time so it look like a 1 big sprite. It probably could be as 1 big sprite, but i fear the gap where the player goes trough, it would kill the player and for now it works so i wont change it. The pipes spawn at random highs with the help of a module "random". 
+            Currently pipes are preatty much done they arent buggy so that's nice the only thing planned for the pipes is that they will move up and down after some score.
       
       3. Score system
         
-          Curently the detection score system is nice but i would like a counter on top or bottom of the screen so player can see his score and doesn't he see it in Terminal after he dies
+            Score counter works based on collision of the Bird and a pointwall in game pointwall spawn at the same exact time as pipes and it streches from the top to the bottom of the screen. The highest achived score is now also works. At every death the player's the code check if his score is higher than the score he managed to get before. If yes it over-writes the old score in the .txt file named Highest score.
+            Score system is now done prob will just make some adjustments for example other sprites like pipes and clouds won't cover the score, but that is a just minor bug. Score system works as it should. It has a bug that i have in mind that i want to fix but it isn't anything game breaking.
 
   3. Restart mechanism and death screen
 
-      I want to have a death screen where it shows you your score and your highest score i have achived. "Retry" and "Menu" buttons so you can either go to the menu and quit or you can instantly restart without either going to the menu or turning the game off and just retry again.
+    Death screen has only a few things and i probably won't add anything else. It has 2 buttons as the menu. 1st button is menu and 2nd retry, which are kinda self-explainitory. Also it has a text above which says the highest achived score ever.
