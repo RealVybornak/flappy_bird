@@ -13,7 +13,7 @@ from pygame.locals import (
 try:
     fc = open('Highest_score.txt','x')
 except:
-    print("all good")
+    print("\n")
 else:
     with open('Highest_score.txt','w') as f:
         f.write("0")
@@ -52,7 +52,6 @@ clock = pygame.time.Clock()
 class Player(pygame.sprite.Sprite):
     global VELOCITY
     VELOCITY = 1
-    print(VELOCITY)
     def __init__(self):
         super(Player, self).__init__()
         self.surf = pygame.image.load("flappy.png").convert()
@@ -66,7 +65,9 @@ class Player(pygame.sprite.Sprite):
         if pressd_keys[K_SPACE]:
             if VELOCITY > 0:
                 VELOCITY = 0
-            self.rect.move_ip(0, -20)
+            elif VELOCITY > 5:
+                VELOCITY = 5
+            self.rect.move_ip(0, -10 + VELOCITY)
             VELOCITY -= 0.75
         else: 
             VELOCITY += 0.5
@@ -421,15 +422,19 @@ while main_loop:
         for death_enitity in death_sprites:
             screen.blit(death_enitity.surf, death_enitity.rect)
 
-        draw_text(f"Highest achived score: {str(HIGHEST_SCORE)}", score_font, black, SCREEN_WIDTH/2-480, 200)
-
         try:          
             if HIGHEST_SCORE < REAL_SCORE:
+                DECOY_HIGHEST_SCORE = REAL_SCORE
                 New_Score = str(REAL_SCORE)
                 with open('Highest_score.txt','w') as f:
                     f.write(New_Score)
+                    print("new score")
         except:
             print("u are cooked")
+        else: 
+            DECOY_HIGHEST_SCORE = HIGHEST_SCORE
+
+        draw_text(f"Highest achived score: {str(DECOY_HIGHEST_SCORE)}", score_font, black, SCREEN_WIDTH/2-480, 200)
 
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -504,7 +509,3 @@ while main_loop:
     # Mechanism for turning of the game
     if quit == 1:
         break
-
-
-
-    # this is all written by me :)

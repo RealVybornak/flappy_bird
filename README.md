@@ -60,7 +60,7 @@ Game is simple and almost identical to the game Flappy bird. The game is played 
 
     At some threshold of points pipes will begin to move up and down.
 
-8. Leaderboard
+8. Leaderboard (prob won't happen)
 
     Leaderboard would be nice doubt much players will be on there but it would be nice to see how is at the top. (seems hard tho)
 
