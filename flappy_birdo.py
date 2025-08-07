@@ -509,3 +509,10 @@ while main_loop:
     # Mechanism for turning of the game
     if quit == 1:
         break
+
+
+# Hitting a pipe sfx – https://www.youtube.com/watch?v=xUSfu1mlcVM
+# Clicking a button sfx – https://www.youtube.com/watch?v=i0DON3AjhW4&pp=ygUJY2xpY2sgc2Z4
+# Wing flap – https://www.youtube.com/watch?v=Pd7w1hdSx7s&pp=ygUZZmxhcHB5IGJpcmQgd2luZyBmbGFwIHNmeA%3D%3D
+# Ponit gained – https://www.youtube.com/watch?v=ndrjKA86iK4&pp=ygUOcG9pbnQgZ2FpbiBzZng%3D
+# Background Music – https://www.youtube.com/watch?v=o4nV7joYofs&list=RDo4nV7joYofs&start_radio=1
