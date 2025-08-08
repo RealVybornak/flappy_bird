@@ -28,6 +28,7 @@ SCORE = 0
 SPEED = 5                           
 SPAWN_TIME = 2000
 
+pygame.mixer.init()
 pygame.init()
 pygame.font.init()
 
@@ -63,6 +64,7 @@ class Player(pygame.sprite.Sprite):
     def movement(self, pressd_keys):
         global VELOCITY
         if pressd_keys[K_SPACE]:
+            wing_flap.play()
             if VELOCITY > 0:
                 VELOCITY = 0
             elif VELOCITY > 5:
@@ -248,6 +250,19 @@ menu_sprites.add(game_name)
 
 dummy = Dummy_bird()
 menu_sprites.add(dummy)
+
+# Setting up sounds effects and background music
+pygame.mixer.music.load("background.mp3")
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play(loops=-1)
+
+collision_sound = pygame.mixer.Sound("pipe_collision.mp3")
+point_gained = pygame.mixer.Sound("point_gain.mp3")
+point_gained.set_volume(0.75)
+wing_flap = pygame.mixer.Sound("wing_flap.mp3")
+wing_flap.set_volume(0.2)
+mouse_click = pygame.mixer.Sound("mouse_click.mp3")
+
 while main_loop:
     # Menu loop
     while menu:
@@ -271,11 +286,13 @@ while main_loop:
 
                 if 1019 < cursor_position[0] < 1619:
                     if 600 < cursor_position[1] < 898:
+                        mouse_click.play()
                         running = True
                         menu = False   
 
                 if 300 < cursor_position[0] < 889:
                     if 600 < cursor_position[1] < 897:
+                        mouse_click.play()
                         quit = 1
                         menu = False
 
@@ -341,16 +358,20 @@ while main_loop:
 
         # Collisions between sprites
         if pygame.sprite.spritecollide(player, lower, upper):
+            collision_sound.play()
             player.kill()
             death = True
             running = False
 
         if pygame.sprite.spritecollide(player, upper, lower):
+            collision_sound.play()
             player.kill()
             death = True
             running = False
 
         if pygame.sprite.spritecollide(player, pointwall, True):
+            point_gained.stop()
+            point_gained.play()
             SCORE += 1
             REAL_SCORE += 1
 
@@ -429,10 +450,11 @@ while main_loop:
                 with open('Highest_score.txt','w') as f:
                     f.write(New_Score)
                     print("new score")
+            else: 
+                DECOY_HIGHEST_SCORE = HIGHEST_SCORE
         except:
             print("u are cooked")
-        else: 
-            DECOY_HIGHEST_SCORE = HIGHEST_SCORE
+        
 
         draw_text(f"Highest achived score: {str(DECOY_HIGHEST_SCORE)}", score_font, black, SCREEN_WIDTH/2-480, 200)
 
@@ -452,11 +474,13 @@ while main_loop:
 
                 if 1019 < cursor_position[0] < 1619:
                     if 600 < cursor_position[1] < 898:
+                        mouse_click.play()
                         menu = True
                         death = False 
 
                 if 300 < cursor_position[0] < 889:
                     if 600 < cursor_position[1] < 897:
+                        mouse_click.play()
                         running = True
                         death = False
 

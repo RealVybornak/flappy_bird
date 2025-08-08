@@ -52,25 +52,25 @@ Game is simple and almost identical to the game Flappy bird. The game is played 
 
     When the player dies it will show a menu that will have few different features like "menu" button and "retry" button and more.
 
-6. Spacebar can't be held
+6. Music and sound effects
 
-    Make so spacebar can't be held and make people break their spacebar.
+    Add sounds effects and background music.
 
 7. Moving pipes
 
     At some threshold of points pipes will begin to move up and down.
 
-8. Leaderboard (prob won't happen)
+8. Settings button
+
+    In menu there will be a setting button, where will be the player turn off the music or turn off the sound effects
+
+9. Leaderboard (prob won't happen)
 
     Leaderboard would be nice doubt much players will be on there but it would be nice to see how is at the top. (seems hard tho)
 
-9. MVC design
+10. MVC design
 
     Have no idea what this means but it sounds cool.
-
-10. custom music
-
-    maybe trying to add my own melody that i will play.
 
 ## Game parts
   1. Menu
