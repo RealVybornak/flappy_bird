@@ -20,13 +20,13 @@ else:
 
 FILE = open('Highest_score.txt')
 INFILE_SCORE = FILE.read()
-HIGHEST_SCORE = int(INFILE_SCORE)
+highest_score = int(INFILE_SCORE)
 
 # Variables
-REAL_SCORE = 0
-SCORE = 0
-SPEED = 5                           
-SPAWN_TIME = 2000
+real_score = 0
+score = 0
+speed = 5                           
+spawn_time = 2000
 
 pygame.mixer.init()
 pygame.init()
@@ -35,6 +35,18 @@ pygame.font.init()
 # Score counter variables
 score_font = pygame.font.SysFont('segoescript', 75, True)
 black = (0,0,0)
+
+# Setting up images for classes
+PLAYER_IMG = pygame.image.load("assets/textures/flappy.png")
+LOWER_PIPE_IMG = pygame.image.load("assets/textures/pipe_lower.png")
+UPPER_PIPE_IMG = pygame.image.load("assets/textures/pipe_upper.png")
+CLOUD_IMG = pygame.image.load("assets/textures/cloud_2.png")
+START_IMG = pygame.image.load("assets/textures/start_button.png")
+QUIT_IMG = pygame.image.load("assets/textures/quit_button.png")
+MENU_IMG = pygame.image.load("assets/textures/menu_button.png")
+RETRY_IMG = pygame.image.load("assets/textures/retry_button.png")
+TITLE_IMG = pygame.image.load("assets/textures/title_name.png")
+DUMMY_IMG = pygame.image.load("assets/textures/dummy_flappy.png")
 
 # Size of the window
 SCREEN_WIDTH = 1920
@@ -46,6 +58,8 @@ def draw_text(text, font, text_color, x_coords, y_coords):
     img = font.render(text, True, text_color)
     screen.blit(img, (x_coords,y_coords))
 
+
+
 # Used for tick speed
 clock = pygame.time.Clock()
 
@@ -54,8 +68,8 @@ class Player(pygame.sprite.Sprite):
     global VELOCITY
     VELOCITY = 1
     def __init__(self):
-        super(Player, self).__init__()
-        self.surf = pygame.image.load("flappy.png").convert()
+        super().__init__()
+        self.surf = PLAYER_IMG
         self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
@@ -67,14 +81,13 @@ class Player(pygame.sprite.Sprite):
             wing_flap.play()
             if VELOCITY > 0:
                 VELOCITY = 0
-            elif VELOCITY > 5:
-                VELOCITY = 5
+            if self.rect.top == 0:
+                VELOCITY = -10    
             self.rect.move_ip(0, -10 + VELOCITY)
             VELOCITY -= 0.75
         else: 
             VELOCITY += 0.5
             self.rect.move_ip(0,VELOCITY)
-
 
         self.rect.top = max(self.rect.top, 0)
         self.rect.bottom = min(self.rect.bottom, SCREEN_HEIGHT)
@@ -83,9 +96,9 @@ class Player(pygame.sprite.Sprite):
 class Obsticles_Lower(pygame.sprite.Sprite):
     def __init__(self):
         global size
-        super(Obsticles_Lower, self).__init__()
+        super().__init__()
         size = random.randint(695,1365)
-        self.surf = pygame.image.load("pipe_lower.png").convert()
+        self.surf = LOWER_PIPE_IMG
         self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(
             center=(SCREEN_WIDTH + 100, size)
@@ -93,57 +106,57 @@ class Obsticles_Lower(pygame.sprite.Sprite):
 
 
     def update(self):
-        self.rect.move_ip(-SPEED, 0)
+        self.rect.move_ip(-speed, 0)
         if self.rect.right < 0:
             self.kill()
 
 
 class Obsticles_Upper(pygame.sprite.Sprite):
     def __init__(self):
-        super(Obsticles_Upper, self).__init__()
-        self.surf = pygame.image.load("pipe_upper.png").convert()
+        super().__init__()
+        self.surf = UPPER_PIPE_IMG
         self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(
             center=(SCREEN_WIDTH + 100, (size - 780-250))
         )
 
     def update(self):
-        self.rect.move_ip(-SPEED, 0)
+        self.rect.move_ip(-speed, 0)
         if self.rect.right < 0:
             self.kill()
 
 
 class Points(pygame.sprite.Sprite):
     def __init__(self):
-        super(Points, self).__init__()
+        super().__init__()
         self.surf = pygame.Surface((50, SCREEN_HEIGHT))
         self.surf.fill((135, 0, 250))
         self.rect = self.surf.get_rect(center=(SCREEN_WIDTH + 100, SCREEN_HEIGHT/2))
 
     def update(self):
-        self.rect.move_ip(-SPEED, 0)
+        self.rect.move_ip(-speed, 0)
         if self.rect.right < 0:
             self.kill()
 
 
 class Clouds(pygame.sprite.Sprite):
     def __init__(self):
-        super(Clouds, self).__init__()
-        self.surf = pygame.image.load("cloud_2.png").convert()
+        super().__init__()
+        self.surf = CLOUD_IMG
         self.surf.set_colorkey((0, 0, 0))
         self.rect = self.surf.get_rect(
             center=(SCREEN_WIDTH + 100, random.randint(50, 1030))
         )
 
     def update(self):
-        self.rect.move_ip(-SPEED, 0)
+        self.rect.move_ip(-speed, 0)
         if self.rect.right < 0:
             self.kill()
             
 class Start(pygame.sprite.Sprite):
     def __init__(self):
-        super(Start, self).__init__()
-        self.surf = pygame.image.load("start_button.png").convert()
+        super().__init__()
+        self.surf = START_IMG
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
             center=(1320, 750)
@@ -151,8 +164,8 @@ class Start(pygame.sprite.Sprite):
 
 class Quit(pygame.sprite.Sprite):
     def __init__(self):
-        super(Quit, self).__init__()
-        self.surf = pygame.image.load("quit_button.png").convert()
+        super().__init__()
+        self.surf = QUIT_IMG
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
             center=(600, 750)
@@ -160,8 +173,8 @@ class Quit(pygame.sprite.Sprite):
 
 class Menu(pygame.sprite.Sprite):
     def __init__(self):
-        super(Menu, self).__init__()
-        self.surf = pygame.image.load("menu_button.png").convert()
+        super().__init__()
+        self.surf = MENU_IMG
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
             center=(1320, 750)
@@ -169,8 +182,8 @@ class Menu(pygame.sprite.Sprite):
 
 class Retry(pygame.sprite.Sprite):
     def __init__(self):
-        super(Retry, self).__init__()
-        self.surf = pygame.image.load("retry_button.png").convert()
+        super().__init__()
+        self.surf = RETRY_IMG
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
             center=(600, 750)
@@ -179,8 +192,8 @@ class Retry(pygame.sprite.Sprite):
 
 class Title(pygame.sprite.Sprite):
     def __init__(self):
-        super(Title, self).__init__()
-        self.surf = pygame.image.load("Title_name.png").convert()
+        super().__init__()
+        self.surf = TITLE_IMG
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
             center=(960,300)
@@ -188,8 +201,8 @@ class Title(pygame.sprite.Sprite):
 
 class Dummy_bird(pygame.sprite.Sprite):
     def __init__(self):
-        super(Dummy_bird, self).__init__()
-        self.surf = pygame.image.load("dummy_flappy.png").convert()
+        super().__init__()
+        self.surf = DUMMY_IMG
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
             center=(960,500)
@@ -222,13 +235,13 @@ quit = 0
 
 # Setting up each sprite for class and their timers
 ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
 
 ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
 
 POINTWALL = pygame.USEREVENT + 3
-pygame.time.set_timer(POINTWALL, SPAWN_TIME)
+pygame.time.set_timer(POINTWALL, spawn_time)
 
 CLOUD = pygame.USEREVENT + 4
 pygame.time.set_timer(CLOUD, random.randint(250, 750))
@@ -252,16 +265,16 @@ dummy = Dummy_bird()
 menu_sprites.add(dummy)
 
 # Setting up sounds effects and background music
-pygame.mixer.music.load("background.mp3")
+pygame.mixer.music.load("assets/sounds/background.mp3")
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(loops=-1)
 
-collision_sound = pygame.mixer.Sound("pipe_collision.mp3")
-point_gained = pygame.mixer.Sound("point_gain.mp3")
+collision_sound = pygame.mixer.Sound("assets/sounds/pipe_collision.mp3")
+point_gained = pygame.mixer.Sound("assets/sounds/point_gain.mp3")
 point_gained.set_volume(0.75)
-wing_flap = pygame.mixer.Sound("wing_flap.mp3")
+wing_flap = pygame.mixer.Sound("assets/sounds/wing_flap.mp3")
 wing_flap.set_volume(0.2)
-mouse_click = pygame.mixer.Sound("mouse_click.mp3")
+mouse_click = pygame.mixer.Sound("assets/sounds/mouse_click.mp3")
 
 while main_loop:
     # Menu loop
@@ -350,7 +363,7 @@ while main_loop:
         screen.fill((135, 206, 250))
 
         # Score counter
-        draw_text(str(REAL_SCORE), score_font, black, SCREEN_WIDTH/2, 100)
+        draw_text(str(real_score), score_font, black, SCREEN_WIDTH/2, 100)
 
         # Drawing every sprite
         for entity in ingame_sprites:
@@ -372,61 +385,61 @@ while main_loop:
         if pygame.sprite.spritecollide(player, pointwall, True):
             point_gained.stop()
             point_gained.play()
-            SCORE += 1
-            REAL_SCORE += 1
+            score += 1
+            real_score += 1
 
         if pygame.sprite.groupcollide(pointwall, clouds, False, True):
             new_cloud.kill()
 
         # Difficulty increase (speed and spawn time is changed)
-        if SCORE == 10:
-            SPEED = 7
-            SPAWN_TIME = 1400
+        if score == 10:
+            speed = 7
+            spawn_time = 1400
             ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-            pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+            pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
 
             ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-            pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+            pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
 
             POINTWALL = pygame.USEREVENT + 3
-            pygame.time.set_timer(POINTWALL, SPAWN_TIME)
-            SCORE += 1
-        if SCORE == 26:
-            SPEED = 9
-            SPAWN_TIME = 1200
+            pygame.time.set_timer(POINTWALL, spawn_time)
+            score += 1
+        if score == 26:
+            speed = 9
+            spawn_time = 1200
             ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-            pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+            pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
 
             ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-            pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+            pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
 
             POINTWALL = pygame.USEREVENT + 3
-            pygame.time.set_timer(POINTWALL, SPAWN_TIME)
-            SCORE += 1
-        if SCORE == 52:
-            SPEED = 13
-            SPAWN_TIME = 900
+            pygame.time.set_timer(POINTWALL, spawn_time)
+            score += 1
+        if score == 52:
+            speed = 13
+            spawn_time = 900
             ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-            pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+            pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
 
             ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-            pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+            pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
 
             POINTWALL = pygame.USEREVENT + 3
-            pygame.time.set_timer(POINTWALL, SPAWN_TIME)
-            SCORE += 1
-        if SCORE == 103:
-            SPEED = 25
-            SPAWN_TIME = 800
+            pygame.time.set_timer(POINTWALL, spawn_time)
+            score += 1
+        if score == 103:
+            speed = 25
+            spawn_time = 800
             ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-            pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+            pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
 
             ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-            pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+            pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
 
             POINTWALL = pygame.USEREVENT + 3
-            pygame.time.set_timer(POINTWALL, SPAWN_TIME)
-            SCORE += 1
+            pygame.time.set_timer(POINTWALL, spawn_time)
+            score += 1
         
         # Making everting work
         pygame.display.flip()
@@ -444,19 +457,19 @@ while main_loop:
             screen.blit(death_enitity.surf, death_enitity.rect)
 
         try:          
-            if HIGHEST_SCORE < REAL_SCORE:
-                DECOY_HIGHEST_SCORE = REAL_SCORE
-                New_Score = str(REAL_SCORE)
+            if highest_score < real_score:
+                decoy_highest_score = real_score
+                new_score = str(real_score)
                 with open('Highest_score.txt','w') as f:
-                    f.write(New_Score)
+                    f.write(new_score)
                     print("new score")
             else: 
-                DECOY_HIGHEST_SCORE = HIGHEST_SCORE
+                decoy_highest_score = highest_score
         except:
             print("u are cooked")
         
 
-        draw_text(f"Highest achived score: {str(DECOY_HIGHEST_SCORE)}", score_font, black, SCREEN_WIDTH/2-480, 200)
+        draw_text(f"Highest achived score: {str(decoy_highest_score)}", score_font, black, SCREEN_WIDTH/2-480, 200)
 
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -491,10 +504,10 @@ while main_loop:
     player = Player()
 
     # Reseting variables
-    REAL_SCORE = 0
-    SCORE = 0
-    SPEED = 5
-    SPAWN_TIME = 2000
+    real_score = 0
+    score = 0
+    speed = 5
+    spawn_time = 2000
 
     # Restarting groups
     pointwall = pygame.sprite.Group()
@@ -507,13 +520,13 @@ while main_loop:
 
     # Restarting timers and each sprite in a class
     ADDOBSTICLE_UPPER = pygame.USEREVENT + 1
-    pygame.time.set_timer(ADDOBSTICLE_UPPER, SPAWN_TIME)
+    pygame.time.set_timer(ADDOBSTICLE_UPPER, spawn_time)
 
     ADDOBSTICLE_LOWER = pygame.USEREVENT + 2
-    pygame.time.set_timer(ADDOBSTICLE_LOWER, SPAWN_TIME)
+    pygame.time.set_timer(ADDOBSTICLE_LOWER, spawn_time)
 
     POINTWALL = pygame.USEREVENT + 3
-    pygame.time.set_timer(POINTWALL, SPAWN_TIME)
+    pygame.time.set_timer(POINTWALL, spawn_time)
 
     CLOUD = pygame.USEREVENT + 4
     pygame.time.set_timer(CLOUD, random.randint(250, 750))
@@ -533,10 +546,3 @@ while main_loop:
     # Mechanism for turning of the game
     if quit == 1:
         break
-
-
-# Hitting a pipe sfx – https://www.youtube.com/watch?v=xUSfu1mlcVM
-# Clicking a button sfx – https://www.youtube.com/watch?v=i0DON3AjhW4&pp=ygUJY2xpY2sgc2Z4
-# Wing flap – https://www.youtube.com/watch?v=Pd7w1hdSx7s&pp=ygUZZmxhcHB5IGJpcmQgd2luZyBmbGFwIHNmeA%3D%3D
-# Ponit gained – https://www.youtube.com/watch?v=ndrjKA86iK4&pp=ygUOcG9pbnQgZ2FpbiBzZng%3D
-# Background Music – https://www.youtube.com/watch?v=o4nV7joYofs&list=RDo4nV7joYofs&start_radio=1
