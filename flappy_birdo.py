@@ -41,10 +41,12 @@ PLAYER_IMG = pygame.image.load("assets/textures/flappy.png")
 LOWER_PIPE_IMG = pygame.image.load("assets/textures/pipe_lower.png")
 UPPER_PIPE_IMG = pygame.image.load("assets/textures/pipe_upper.png")
 CLOUD_IMG = pygame.image.load("assets/textures/cloud_2.png")
+
 START_IMG = pygame.image.load("assets/textures/start_button.png")
 QUIT_IMG = pygame.image.load("assets/textures/quit_button.png")
 MENU_IMG = pygame.image.load("assets/textures/menu_button.png")
 RETRY_IMG = pygame.image.load("assets/textures/retry_button.png")
+
 TITLE_IMG = pygame.image.load("assets/textures/title_name.png")
 DUMMY_IMG = pygame.image.load("assets/textures/dummy_flappy.png")
 
@@ -72,8 +74,6 @@ class Player(pygame.sprite.Sprite):
         self.surf = PLAYER_IMG
         self.surf.set_colorkey((255, 255, 255))
         self.rect = self.surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-
-    
 
     def movement(self, pressd_keys):
         global VELOCITY
@@ -196,7 +196,7 @@ class Title(pygame.sprite.Sprite):
         self.surf = TITLE_IMG
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
-            center=(960,300)
+            center=(990,300)
         )
 
 class Dummy_bird(pygame.sprite.Sprite):
@@ -205,8 +205,12 @@ class Dummy_bird(pygame.sprite.Sprite):
         self.surf = DUMMY_IMG
         self.surf.set_colorkey((255,255,255))
         self.rect = self.surf.get_rect(
-            center=(960,500)
+            center=(960,435)
         )
+
+#class Score_manager():
+#    def __init__(self):
+            
     
 
 # Window set up
@@ -546,3 +550,5 @@ while main_loop:
     # Mechanism for turning of the game
     if quit == 1:
         break
+
+
