@@ -301,14 +301,14 @@ while main_loop:
             elif event.type == MOUSEBUTTONDOWN:
                 cursor_position = pygame.mouse.get_pos()
 
-                if 1019 < cursor_position[0] < 1619:
-                    if 600 < cursor_position[1] < 898:
+                if 1019 < cursor_position[0] < 1619:            #BUTTON_Y = (600,900),#RIGHT_BUTTON_X = (1020,1620),#LEFT_BUTTON_X = (300,890)
+                    if 600 < cursor_position[1] < 898:          
                         mouse_click.play()
                         running = True
                         menu = False   
 
-                if 300 < cursor_position[0] < 889:
-                    if 600 < cursor_position[1] < 897:
+                if 300 < cursor_position[0] < 889:              
+                    if 600 < cursor_position[1] < 897:          
                         mouse_click.play()
                         quit = 1
                         menu = False
@@ -490,7 +490,7 @@ while main_loop:
                 cursor_position = pygame.mouse.get_pos()
 
                 if 1019 < cursor_position[0] < 1619:
-                    if 600 < cursor_position[1] < 898:
+                    if 600 < cursor_position[1] < 898:          
                         mouse_click.play()
                         menu = True
                         death = False 
